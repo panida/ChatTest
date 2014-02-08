@@ -62,9 +62,9 @@ public class Server {
 				// if I was asked to stop
 				if(!keepGoing)
 					break;
-				ClientThread t = new ClientThread(socket);  // make a thread of it
-				clientList.add(t);			// save it in the ArrayList
-				t.start();
+				ClientThread ct = new ClientThread(socket);  // make a thread of it
+				clientList.add(ct);			// save it in the ArrayList
+				ct.start();
 			}
 			// I was asked to stop
 			try {
@@ -87,8 +87,8 @@ public class Server {
 		}
 		// something went bad
 		catch (IOException e) {
-            String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
-			display(msg);
+                    String msg = sdf.format(new Date()) + " Exception on new ServerSocket: " + e + "\n";
+                    display(msg);
 		}
 	}		
     /*
@@ -223,7 +223,7 @@ public class Server {
 			// but I read a String, I am sure it will work
 			catch (ClassNotFoundException e) {
 			}
-            date = new Date().toString() + "\n";
+                        date = new Date().toString() + "\n";
 		}
 
 		// what will run forever
