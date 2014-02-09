@@ -23,6 +23,9 @@ public class Server {
 	private int port;
 	// the boolean that will be turned of to stop the server
 	private boolean keepGoing;
+        
+        private int runID = 1;
+        private ArrayList<User> listUser;
 	
 
 	/*
@@ -91,9 +94,9 @@ public class Server {
                     display(msg);
 		}
 	}		
-    /*
-     * For the GUI to stop the server
-     */
+        /**
+        * For the GUI to stop the server
+        */
 	protected void stop() {
 		keepGoing = false;
 		// connect to myself as Client to exit statement 
@@ -115,7 +118,7 @@ public class Server {
 		else
 			servGUI.appendEvent(time + "\n");
 	}
-	/*
+	/**
 	 *  to broadcast a message to all Clients
 	 */
 	private synchronized void broadcast(String message) {
@@ -152,8 +155,27 @@ public class Server {
 			}
 		}
 	}
+        
+        /**
+         * @author LotK
+         * @param id
+         * @return 
+         */
+        public User searchByUserID(int id) {
+            int left = 0, right = listUser.size()-1;
+            while(left <= right) {
+                int mid = (left+right)/2;
+                if(listUser.get(mid).getID() == id) {System.out.println("Found user: " + listUser.get(mid).getName());
+                    return listUser.get(mid);
+                }
+                if(listUser.get(mid).getID() < id) right = mid-1;
+                else left = mid+1;
+            }
+            System.out.println("Not found user with id " + id);
+            return null;
+        }
 	
-	/*
+	/**
 	 *  To run as a console application just open a console window and: 
 	 * > java Server
 	 * > java Server portNumber
