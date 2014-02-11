@@ -136,10 +136,11 @@ public class Server {
         // because it has disconnected
         ArrayList<Integer> userInGr=listGr.get(grID).getUserID();
         for (int i = userInGr.size(); --i >= 0;) {
-            ClientThread ct = searchByUserID(userInGr.get(i));
+            int clientIndex = searchIndexByUserID(userInGr.get(i));
+            ClientThread ct = clientList.get(clientIndex);
             // try to write to the Client if it fails remove it from the list
             if (!ct.writeMsg(messageLf)) {
-                clientList.remove(i);
+                clientList.remove(clientIndex);
                 display("Disconnected Client " + ct.username + " removed from list.");
             }
         }
@@ -152,6 +153,7 @@ public class Server {
             ClientThread ct = clientList.get(i);
             // found it
             if (ct.id == id) {
+                
                 clientList.remove(i);
                 return;
             }
@@ -163,13 +165,13 @@ public class Server {
      * @param id
      * @return
      */
-    private ClientThread searchByUserID(int id) {
+    private int searchIndexByUserID(int id) {
         int left = 0, right = clientList.size() - 1;
         while (left <= right) {
             int mid = (left + right) / 2;
             if (clientList.get(mid).getID() == id) {
                 System.out.println("Found user: " + clientList.get(mid).getUsername());
-                return clientList.get(mid);
+                return mid;
             }
             if (clientList.get(mid).getID() < id) {
                 right = mid - 1;
@@ -178,7 +180,7 @@ public class Server {
             }
         }
         System.out.println("Not found user with id " + id);
-        return null;
+        return -1;
     }
 
     /**
