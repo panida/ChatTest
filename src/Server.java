@@ -134,13 +134,13 @@ public class Server {
         }
 		// we loop in reverse order in case we would have to remove a Client
         // because it has disconnected
-        ArrayList<Integer> userInGr=listGr.get(grID).getUserID();
+        ArrayList<Integer> userInGr=searchGroupByGroupID(grID).getListUserID();
         for (int i = userInGr.size(); --i >= 0;) {
-            int clientIndex = searchIndexByUserID(userInGr.get(i));
-            ClientThread ct = clientList.get(clientIndex);
+            int currentID =  userInGr.get(i);
+            ClientThread ct = searchUserByUserID(currentID);
             // try to write to the Client if it fails remove it from the list
             if (!ct.writeMsg(messageLf)) {
-                clientList.remove(clientIndex);
+                clientList.remove(currentID);
                 display("Disconnected Client " + ct.username + " removed from list.");
             }
         }
@@ -153,8 +153,12 @@ public class Server {
             ClientThread ct = clientList.get(i);
             // found it
             if (ct.id == id) {
-                
                 clientList.remove(i);
+                ArrayList<Integer> groupOfClient = ct.getListGroupID();
+                for(int j=0;j<groupOfClient.size();j++){
+                    
+                }
+                
                 return;
             }
         }
@@ -165,13 +169,13 @@ public class Server {
      * @param id
      * @return
      */
-    private int searchIndexByUserID(int id) {
+    private ClientThread searchUserByUserID(int id) {
         int left = 0, right = clientList.size() - 1;
         while (left <= right) {
             int mid = (left + right) / 2;
             if (clientList.get(mid).getID() == id) {
                 System.out.println("Found user: " + clientList.get(mid).getUsername());
-                return mid;
+                return clientList.get(mid);
             }
             if (clientList.get(mid).getID() < id) {
                 right = mid - 1;
@@ -180,9 +184,25 @@ public class Server {
             }
         }
         System.out.println("Not found user with id " + id);
-        return -1;
+        return null;
     }
-
+    
+    private Group searchGroupByGroupID(int id) {
+        int left = 0, right = listGr.size() - 1;
+        while (left <= right) {
+            int mid = (left + right) / 2;
+            if (listGr.get(mid).getID() == id){
+                return listGr.get(mid);
+            }
+            if (listGr.get(mid).getID() < id) {
+                right = mid - 1;
+            } else {
+                left = mid + 1;
+            }
+        }
+        System.out.println("Not found Group with id " + id);
+        return null;
+    }
     /**
      * To run as a console application just open a console window and: > java
      * Server > java Server portNumber If the port number is not specified 1500
@@ -355,6 +375,10 @@ public class Server {
         
         public int getLastMessageID(){
             return lastMesID;
+        }
+        
+        public ArrayList<Integer> getListGroupID(){
+            return listGrID;
         }
     }
 }

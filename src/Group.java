@@ -31,7 +31,7 @@ public class Group {
         return this.name;
     }
 
-    public ArrayList<Integer> getUserID() {
+    public ArrayList<Integer> getListUserID() {
         return this.listUserID;
     }
 
