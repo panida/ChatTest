@@ -24,22 +24,26 @@ public class ChatMessage implements Serializable {
 	// WHOISIN to receive the list of the users connected
 	// MESSAGE an ordinary message
 	// LOGOUT to disconnect from the Server
-	static final int WHOISIN = 0, MESSAGE = 1, LOGOUT = 2;
+	static final int WHOISIN = 0, MESSAGE = 1, LOGOUT = 2, JOINGROUP = 3, LEAVEGROUP = 4, LISTGROUP = 5;
 	private int type;
 	private String message;
+        private int groupID;
 	
 	// constructor
 	ChatMessage(int type, String message) {
-		this.type = type;
-		this.message = message;
+            this.type = type;
+            this.message = message;
 	}
 	
 	// getters
 	int getType() {
-		return type;
+            return type;
 	}
 	String getMessage() {
-		return message;
+            return message;
 	}
+        int getGroupID(){
+            return groupID;
+        }
 }
 
