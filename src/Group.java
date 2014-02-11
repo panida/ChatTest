@@ -35,19 +35,19 @@ public class Group {
         return this.listUserID;
     }
 
-    public void addUser(int UserID) {
-        if (listUserID.indexOf(Integer.valueOf(UserID)) == -1) {
-            listUserID.add(Integer.valueOf(UserID));
+    public void addUser(int userID) {
+        if (listUserID.indexOf(Integer.valueOf(userID)) == -1) {
+            listUserID.add(Integer.valueOf(userID));
         } else {
-            System.out.println("This user(" + this.name + ") is already in this group(" + UserID + ")");
+            System.out.println("This user is already in this group");
         }
     }
 
-    public void leaveGroup(int UserID) {
-        if (listUserID.indexOf(Integer.valueOf(UserID)) != -1) {
-            listUserID.remove(listUserID.indexOf(Integer.valueOf(UserID)));
+    public void leaveGroup(int userID) {
+        if (listUserID.indexOf(Integer.valueOf(userID)) != -1) {
+            listUserID.remove(listUserID.indexOf(Integer.valueOf(userID)));
         } else {
-            System.out.println("This user(" + this.name + ") is not in this group(" + UserID + ")");
+            System.out.println("This user is not in this group");
         }
     }
     
@@ -58,8 +58,5 @@ public class Group {
     public ChatMessage getMessage(int msgID){
         return listMessage.get(msgID);
     }
-    
-    public void removeUser(int userID){
-        
-    }
+
 }
