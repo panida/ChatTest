@@ -11,6 +11,8 @@
 import java.net.*;
 import java.io.*;
 import java.util.*;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * The Client that can be run both as a console or a GUI
@@ -97,8 +99,21 @@ public class Client {
     }
     
     private void createGroup(String name) {
-        
-            ChatMessage msg = new ChatMessage(ChatMessage.CREATEGROUP, "",0);
+        try {        
+            ChatMessage msg = new ChatMessage(ChatMessage.CREATEGROUP, name, 0);
+            sOutput.writeObject(msg);
+            msg = (ChatMessage) sInput.readObject();
+            if(msg.getGroupID() > 0) {
+                listGroupID.add(msg.getGroupID());
+                listGroupName.add(msg.getMessage());
+            }
+            else System.out.println("Repeaed Name");
+            
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (ClassNotFoundException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
     }
 
@@ -213,29 +228,34 @@ public class Client {
             System.out.print("Select Group> ");
             String msg = scan.nextLine();
             if (msg.equalsIgnoreCase("LOGOUT")) {
-                client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, "", 1));
+                client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, "", 0));
                 break;
-            } else if (msg.equalsIgnoreCase("LISTGROUP")) {
+            } 
+            else if (msg.equalsIgnoreCase("LISTGROUP")) {
 
-            } else if (true) {// == Integer.valueOf(-1)) {
-                Integer c = client.listGroupID.indexOf(Integer.getInteger(msg));
-                client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg, 1));
-            }
-            while (true) {
-                System.out.print("> ");
-                msg = scan.nextLine();
-                if (msg.equalsIgnoreCase("LOGOUT")) {
-                    client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, "", 1));
-                    break;
-                }
-                else if (msg.equalsIgnoreCase("WHOISIN")) {
-                    client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, "", 1));
-                } else if (msg.equalsIgnoreCase("LISTGROUP")) {
+            } 
+            else if (client.listGroupID.indexOf(Integer.getInteger(msg)) > Integer.valueOf(-1)) {
+                client.sendMessage(new ChatMessage(ChatMessage.ENTERGROUP, msg, 1));
+                while (true) {
+                    System.out.print("> ");
+                    msg = scan.nextLine();
+                    if (msg.equalsIgnoreCase("LOGOUT")) {
+                        client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, "", 1));
+                        break;
+                    }
+                    else if (msg.equalsIgnoreCase("WHOISIN")) {
+                        client.sendMessage(new ChatMessage(ChatMessage.WHOISIN, "", 1));
+                    } 
+                    else if (msg.equalsIgnoreCase("LISTGROUP")) {
 
-                } else if (msg.equalsIgnoreCase("EXIT")) {
-                    break;
-                } else {				// default to ordinary message
-                    client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg, 1));
+                    } 
+                    else if (msg.equalsIgnoreCase("EXIT")) {
+                        client.sendMessage(new ChatMessage(ChatMessage.EXITGROUP, "", 1));
+                        break;
+                    } 
+                    else {				// default to ordinary message
+                        client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg, 1));
+                    }
                 }
             }
         }
@@ -253,13 +273,13 @@ public class Client {
         public void run() {
             while (true) {
                 try {
-                    String msg = (String) sInput.readObject();
+                    ChatMessage msg = (ChatMessage) sInput.readObject();
                     // if console mode print the message and add back the prompt
                     if (cg == null) {
                         System.out.println(msg);
                         System.out.print("> ");
                     } else {
-                        cg.append(msg);
+                        cg.append(msg.getMessage());
                     }
                 } catch (IOException e) {
                     display("Server has close the connection: " + e);
