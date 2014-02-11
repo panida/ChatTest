@@ -126,6 +126,7 @@ public class Server {
         // add HH:mm:ss and \n to the message
         String time = sdf.format(new Date());
         String messageLf = time + " " + message + "\n";
+        ChatMessage chatMsgLf;
         // display message on console or GUI
         if (servGUI == null) {
             System.out.print(messageLf);
@@ -139,7 +140,8 @@ public class Server {
             int currentID =  userInGr.get(i);
             ClientThread ct = searchUserByUserID(currentID);
             // try to write to the Client if it fails remove it from the list
-            if (!ct.writeMsg(messageLf)) {
+            chatMsgLf = new ChatMessage(ChatMessage.MESSAGE, messageLf, grID);
+            if (!((ct.writeMsg(messageLf)) && ct.writeMsgToStream(chatMsgLf))) {
                 clientList.remove(currentID);
                 display("Disconnected Client " + ct.username + " removed from list.");
             }
@@ -200,6 +202,17 @@ public class Server {
             }
         }
         System.out.println("Not found Group with id " + id);
+        return null;
+    }
+    
+    private Group searchGroupByName(String grName){
+        Group g;
+        for(int i=0;i<listGr.size();i++){
+            g=listGr.get(i);
+            if(g.getName().equalsIgnoreCase(grName)){
+                return g;
+            }
+        }
         return null;
     }
     /**
@@ -294,7 +307,9 @@ public class Server {
                 }
                 // the messaage part of the ChatMessage
                 String message = cm.getMessage();
-
+                String msg="";
+                String msgToClient="";
+                ChatMessage outMsg;
                 // Switch on the type of message receive
                 switch (cm.getType()) {
 
@@ -306,13 +321,43 @@ public class Server {
                         keepGoing = false;
                         break;
                     case ChatMessage.WHOISIN:
-                        writeMsg("List of the users connected at " + sdf.format(new Date()) + "\n");
+                        
+                        msg=msg+"List of the users connected at " + sdf.format(new Date()) + "\n";
                         // scan clientList the users connected
-                        for (int i = 0; i < clientList.size(); ++i) {
-                            ClientThread ct = clientList.get(i);
-                            writeMsg((i + 1) + ") " + ct.username + " since " + ct.date);
+                        Group g = searchGroupByGroupID(id);
+                        ArrayList<Integer> listUserInGroup = g.getListUserID();
+                        for (int i = 0; i < listUserInGroup.size(); ++i) {
+                            ClientThread ct = searchUserByUserID(listUserInGroup.get(i));
+                            msg = msg + (i + 1) + ") " + ct.username + " since " + ct.date;
+                            msgToClient = msgToClient+ct.username+",";
                         }
+                        outMsg= new ChatMessage(ChatMessage.WHOISIN,msgToClient,cm.getGroupID());
+                        writeMsg(msg);
+                        writeMsgToStream(outMsg);
                         break;
+                    case ChatMessage.LISTGROUP:
+                        msg="";
+                        msgToClient="";
+                        
+                        msg=msg+"List of the Group connected at " + sdf.format(new Date()) + "\n";   
+          
+                        for (int i = 0; i < listGrID.size(); ++i) {
+                            g = searchGroupByGroupID(listGrID.get(i));
+                            msg = msg + (i + 1) + ") " + g.getName();
+                            msgToClient = msgToClient+g.getID()+","+g.getName()+";";
+                        }
+                        outMsg= new ChatMessage(ChatMessage.LISTGROUP,msgToClient,cm.getGroupID());
+                        writeMsg(msg);
+                        writeMsgToStream(outMsg);
+                        break;
+                    case ChatMessage.JOINGROUP:
+                        g = searchGroupByName(cm.getMessage());
+                        if(g!=null){
+                            g.addUser(id);
+                            listGrID.add(g.getID());
+                            writeMsg(""+username+" just joined group "+g.getName());  
+                            broadcast(""+username+" just joined", cm.getGroupID());
+                        }
                 }
             }
 			// remove myself from the arrayList containing the list of the
@@ -353,6 +398,11 @@ public class Server {
                 close();
                 return false;
             }
+            
+            return true;
+        }
+        
+        private boolean writeMsgToStream(ChatMessage msg){
             // write the message to the stream
             try {
                 sOutput.writeObject(msg);
@@ -360,10 +410,10 @@ public class Server {
             catch (IOException e) {
                 display("Error sending message to " + username);
                 display(e.toString());
+                return false;
             }
             return true;
         }
-
         public int getID() {
             return id;
         }
