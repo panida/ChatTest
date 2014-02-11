@@ -216,6 +216,7 @@ public class Server {
     class ClientThread extends Thread {
 
         ArrayList<Integer> listGrID;
+        int lastMesID;
         // the socket where to listen/talk
         Socket socket;
         ObjectInputStream sInput;
@@ -348,6 +349,10 @@ public class Server {
         
         public String getUsername(){
             return username;
+        }
+        
+        public int getLastMessageID(){
+            return lastMesID;
         }
     }
 }

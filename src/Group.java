@@ -50,5 +50,16 @@ public class Group {
             System.out.println("This user(" + this.name + ") is not in this group(" + UserID + ")");
         }
     }
-
+    
+    public void addChatMessage(ChatMessage msg){
+        listMessage.add(msg);
+    }
+    
+    public ChatMessage getMessage(int msgID){
+        return listMessage.get(msgID);
+    }
+    
+    public void removeUser(int userID){
+        
+    }
 }
