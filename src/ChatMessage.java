@@ -4,6 +4,7 @@
  * and open the template in the editor.
  */
         // Cat Naooo
+
 /**
  *
  * @author cp_panida
@@ -16,34 +17,37 @@ import java.io.*;
  * When talking from a Java Client to a Java Server a lot easier to pass Java objects, no 
  * need to count bytes or to wait for a line feed at the end of the frame
  */
+
 public class ChatMessage implements Serializable {
 
-	protected static final long serialVersionUID = 1112122200L;
+    protected static final long serialVersionUID = 1112122200L;
 
 	// The different types of message sent by the Client
-	// WHOISIN to receive the list of the users connected
-	// MESSAGE an ordinary message
-	// LOGOUT to disconnect from the Server
-	static final int WHOISIN = 0, MESSAGE = 1, LOGOUT = 2, JOINGROUP = 3, LEAVEGROUP = 4, LISTGROUP = 5;
-	private int type;
-	private String message;
-        private int groupID;
-	
-	// constructor
-	ChatMessage(int type, String message) {
-            this.type = type;
-            this.message = message;
-	}
-	
-	// getters
-	int getType() {
-            return type;
-	}
-	String getMessage() {
-            return message;
-	}
-        int getGroupID(){
-            return groupID;
-        }
-}
+    // WHOISIN to receive the list of the users connected
+    // MESSAGE an ordinary message
+    // LOGOUT to disconnect from the Server
+    static final int LOGIN = 1, LOGOUT = 2, MESSAGE = 3, JOINGROUP = 4, LEAVEGROUP = 5, LISTGROUP = 6, WHOISIN = 7;
+    private int type;
+    private String message;
+    private int groupID;
 
+    // constructor
+    ChatMessage(int type, String message, int _groupID) {
+        this.type = type;
+        this.message = message;
+        this.groupID = _groupID;
+    }
+
+    // getters
+    int getType() {
+        return type;
+    }
+
+    String getMessage() {
+        return message;
+    }
+
+    int getGroupID() {
+        return groupID;
+    }
+}
