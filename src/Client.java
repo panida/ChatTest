@@ -51,6 +51,9 @@ public class Client {
         this.username = username;
         // save if we are in GUI mode or not
         this.cg = cg;
+        
+        listGroupID = new ArrayList<>();
+        listGroupName = new ArrayList<>();
     }
 
     /**
@@ -208,8 +211,8 @@ public class Client {
                 break;
             } else if (msg.equalsIgnoreCase("LISTGROUP")) {
 
-            } else if (listGroupID.indexOf(Integer.parseInt(msg)) == Integer.valueOf(-1)) {
-                
+            } else if (true) {// == Integer.valueOf(-1)) {
+                Integer c = client.listGroupID.indexOf(Integer.getInteger(msg));
                 client.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg, 1));
             }
             while (true) {
