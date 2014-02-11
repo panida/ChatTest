@@ -130,7 +130,7 @@ public class Server {
         if (servGUI == null) {
             System.out.print(messageLf);
         } else {
-            servGUI.appendRoom(messageLf, grID);     // append in the room window
+            //servGUI.appendRoom(messageLf, grID);     // append in the room window
         }
 		// we loop in reverse order in case we would have to remove a Client
         // because it has disconnected
@@ -156,9 +156,8 @@ public class Server {
                 clientList.remove(i);
                 ArrayList<Integer> groupOfClient = ct.getListGroupID();
                 for(int j=0;j<groupOfClient.size();j++){
-                    
-                }
-                
+                    searchGroupByGroupID(groupOfClient.get(j)).leaveGroup(id);
+                }          
                 return;
             }
         }
@@ -300,7 +299,7 @@ public class Server {
                 switch (cm.getType()) {
 
                     case ChatMessage.MESSAGE:
-                        broadcast(username + ": " + message, ChatMessage.getGroupID());
+                        broadcast(username + ": " + message, cm.getGroupID());
                         break;
                     case ChatMessage.LOGOUT:
                         display(username + " disconnected with a LOGOUT message.");
