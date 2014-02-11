@@ -95,6 +95,12 @@ public class Client {
         // success we inform the caller that it worked
         return true;
     }
+    
+    private void createGroup(String name) {
+        
+            ChatMessage msg = new ChatMessage(ChatMessage.CREATEGROUP, "",0);
+        
+    }
 
     /**
      * To send a message to the console or the GUI
