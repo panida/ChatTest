@@ -183,6 +183,12 @@ public class Client {
      * id used, the GUI is informed of the disconnection
      */
     public static void main(String[] args) {
+        java.awt.EventQueue.invokeLater(new Runnable() {
+            public void run() {
+                new TestGUI().setVisible(true);
+            }
+        });
+        
         // default values
         int portNumber = 1500;
         String serverAddress = "localhost";
