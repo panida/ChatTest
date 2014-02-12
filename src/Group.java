@@ -58,5 +58,16 @@ public class Group {
     public ChatMessage getMessage(int msgID){
         return listMessage.get(msgID);
     }
+    
+    public int getCurrentMessageID(){
+        return listMessage.size()-1;
+    }
+    
+    public boolean isInGroup(int userID){
+        for(int i=0;i<listUserID.size();i++){
+            if(userID == listUserID.get(i)) return true;
+        }
+        return false;
+    }
 
 }
