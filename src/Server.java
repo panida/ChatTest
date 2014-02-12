@@ -158,6 +158,9 @@ public class Server {
                 if (!ct.writeMsg(g.getMessage(mID))) {
                      clientList.remove(currentID);
                      display("Disconnected Client " + ct.username + " removed from list.");
+               }
+                else{
+                    ct.setLastMessageID(g.getID(), mID);
                 }
 
             }
@@ -416,6 +419,7 @@ public class Server {
                         g = searchGroupByName(tname);
                         if (g != null) {              
                             //display("" + username + " just entered group " + tname + " with ID " + g.getID());
+                            currentGrID=g.getID();
                             outMsg = new ChatMessage(ChatMessage.ENTERGROUP,"", g.getID());
                             writeMsg(outMsg);
                             //broadcast("" + username + " just entered group",g.getID());
@@ -426,6 +430,22 @@ public class Server {
                             writeMsg(outMsg);
                         }
                         break;
+                    case ChatMessage.EXITGROUP:
+                        currentGrID=-1;
+                        break;
+                    case ChatMessage.LEAVEGROUP:
+                        searchGroupByGroupID(currentGrID).leaveGroup(id);
+                        int index = indexOfgr(id);
+                        listGrID.remove(index);
+                        lastMesID.remove(index);
+                        broadcast(""+username+" left group",currentGrID);
+                        currentGrID=-1;
+                        break;
+                        
+                        
+                        
+                        
+                        
                 }
             }
             // remove myself from the arrayList containing the list of the
