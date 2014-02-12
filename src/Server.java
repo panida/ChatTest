@@ -48,7 +48,7 @@ public class Server {
         sdf = new SimpleDateFormat("HH:mm:ss");
         // ArrayList for the Client list
         clientList = new ArrayList<ClientThread>();
-
+        listGr = new ArrayList<Group>();
     }
 
     public void start() {
@@ -141,6 +141,7 @@ public class Server {
         Group g = searchGroupByGroupID(grID);
         g.addChatMessage(chatMsgLf);
         int mID = g.getCurrentMessageID();
+        
         ArrayList<Integer> userInGr = g.getListUserID();
         for (int i = userInGr.size(); --i >= 0;) {
             int currentID = userInGr.get(i);
@@ -148,6 +149,7 @@ public class Server {
             if (ct.getCurrentGroupID() == g.getID()) {
                 if (ct.getLastMessageID(g.getID()) < g.getCurrentMessageID() - 1) {
                     for (int j = ct.getLastMessageID(g.getID()) + 1; j <= g.getCurrentMessageID() - 1; j++) {
+                        System.out.println("message: "+j);
                         if (!ct.writeMsg(g.getMessage(j))) {
                             clientList.remove(currentID);
                             display("Disconnected Client " + ct.username + " removed from list.");
@@ -160,6 +162,7 @@ public class Server {
                      display("Disconnected Client " + ct.username + " removed from list.");
                }
                 else{
+                    
                     ct.setLastMessageID(g.getID(), mID);
                 }
 
@@ -198,9 +201,9 @@ public class Server {
                 return clientList.get(mid);
             }
             if (clientList.get(mid).getID() < id) {
-                right = mid - 1;
-            } else {
                 left = mid + 1;
+            } else {
+                right = mid - 1;
             }
         }
         System.out.println("Not found user with id " + id);
@@ -214,10 +217,10 @@ public class Server {
             if (listGr.get(mid).getID() == id) {
                 return listGr.get(mid);
             }
-            if (listGr.get(mid).getID() < id) {
-                right = mid - 1;
+            else if (listGr.get(mid).getID() < id) {
+                left = mid +1;
             } else {
-                left = mid + 1;
+                right = mid - 1;
             }
         }
         System.out.println("Not found Group with id " + id);
@@ -358,7 +361,7 @@ public class Server {
                             msgToClient = msgToClient + ct.username + ",";
                         }
                         outMsg = new ChatMessage(ChatMessage.WHOISIN, msgToClient, cm.getGroupID());
-                        //display(msg);
+                        display(msg);
                         writeMsg(outMsg);
                         break;
 
@@ -374,7 +377,7 @@ public class Server {
                             msgToClient = msgToClient + g.getID() + "," + g.getName() + ";";
                         }
                         outMsg = new ChatMessage(ChatMessage.LISTGROUP, msgToClient, cm.getGroupID());
-                        //display(msg);
+                        display(msg);
                         writeMsg(outMsg);
                         break;
                     case ChatMessage.JOINGROUP:
@@ -388,13 +391,13 @@ public class Server {
                                 display("" + username + " just joined group " + g.getName());
                                 broadcast("" + username + " just joined", g.getID());
                             } else {
-                                //display("" + username + " is already in Group " + g.getName());
+                                display("" + username + " is already in Group " + g.getName());
                                 outMsg = new ChatMessage(ChatMessage.JOINGROUP, "" + username + " is already in Group " + g.getName(), 0);
                                 writeMsg(outMsg);
 
                             }
                         } else {
-                            //display("" + cm.getMessage() + " does not exist");
+                            display("" + cm.getMessage() + " does not exist");
                             writeMsg(new ChatMessage(ChatMessage.JOINGROUP, "" + cm.getMessage() + " does not exist", 0));
                         }
                         break;
@@ -403,13 +406,13 @@ public class Server {
                         g = searchGroupByName(tname);
                         if (g == null) {
                             g = new Group(tname, ++uniqueGrId);
-                            g.addUser(id);
+                            
                             listGr.add(g);
                             display("" + username + " just created group " + tname + " with ID " + g.getID());
                             outMsg = new ChatMessage(ChatMessage.CREATEGROUP, "", g.getID());
                             writeMsg(outMsg);
                         } else {
-                            //display("" + tname + " already exists");
+                            display("" + tname + " already exists");
                             outMsg = new ChatMessage(ChatMessage.CREATEGROUP, "" + tname + " already exists", 0);
                             writeMsg(outMsg);
                         }
@@ -418,14 +421,14 @@ public class Server {
                         tname = cm.getMessage();
                         g = searchGroupByName(tname);
                         if (g != null) {              
-                            //display("" + username + " just entered group " + tname + " with ID " + g.getID());
+                            display("" + username + " just entered group " + tname + " with ID " + g.getID());
                             currentGrID=g.getID();
                             outMsg = new ChatMessage(ChatMessage.ENTERGROUP,"", g.getID());
                             writeMsg(outMsg);
                             //broadcast("" + username + " just entered group",g.getID());
                         
                         } else {
-                            //display("" + tname + " already exists");
+                            display("" + tname + " already exists");
                             outMsg = new ChatMessage(ChatMessage.ENTERGROUP, "Group " + tname + " does not exist", 0);
                             writeMsg(outMsg);
                         }
@@ -439,6 +442,7 @@ public class Server {
                         listGrID.remove(index);
                         lastMesID.remove(index);
                         broadcast(""+username+" left group",currentGrID);
+                        
                         currentGrID=-1;
                         break;
                         

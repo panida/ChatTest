@@ -21,6 +21,7 @@ public class Group {
         name = _name;
         id = _id;
         listUserID = new ArrayList<>();
+        listMessage = new ArrayList<ChatMessage>();
     }
 
     public int getID() {
