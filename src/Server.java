@@ -409,7 +409,7 @@ public class Server {
                             
                             listGr.add(g);
                             display("" + username + " just created group " + tname + " with ID " + g.getID());
-                            outMsg = new ChatMessage(ChatMessage.CREATEGROUP, "", g.getID());
+                            outMsg = new ChatMessage(ChatMessage.CREATEGROUP, ""+tname, g.getID());
                             writeMsg(outMsg);
                         } else {
                             display("" + tname + " already exists");
