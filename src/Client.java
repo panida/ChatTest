@@ -165,6 +165,10 @@ public class Client {
         }
     }
     
+    public void message(String msg, int groupID) {
+        this.sendMessage(new ChatMessage(ChatMessage.MESSAGE, msg, groupID));
+    }
+    
     public void joinGroup(String groupName) {
         this.sendMessage(new ChatMessage(ChatMessage.JOINGROUP, groupName, 0));
     }
@@ -332,6 +336,13 @@ public class Client {
                                 cg.showMessageDialog("No Group to join");
                             }
                         }
+                        else {
+                            listGroupID.add(msg.getGroupID());
+                            listGroupName.add(msg.getMessage());
+                            if(cg != null) {
+                                cg.addGroup(msg.getGroupID(), msg.getMessage());
+                            }
+                        }
                     }
                     /*
                     else if(msg.getType() == ChatMessage.LEAVEGROUP) {
@@ -354,6 +365,9 @@ public class Client {
                         if(msg.getGroupID() > 0) {
                             listGroupID.add(msg.getGroupID());
                             listGroupName.add(msg.getMessage());
+                            if(cg != null) {
+                                cg.addGroup(msg.getGroupID(), msg.getMessage());
+                            }
                         }
                         else {
                             if (cg == null) {
