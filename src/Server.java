@@ -158,6 +158,9 @@ public class Server {
                 if (!ct.writeMsg(g.getMessage(mID))) {
                      clientList.remove(currentID);
                      display("Disconnected Client " + ct.username + " removed from list.");
+               }
+                else{
+                    ct.setLastMessageID(g.getID(), mID);
                 }
 
             }
@@ -429,8 +432,19 @@ public class Server {
                         break;
                     case ChatMessage.EXITGROUP:
                         currentGrID=-1;
+                        break;
                     case ChatMessage.LEAVEGROUP:
-                        g = searchGroupByGroupID(cm.getGroupID());
+                        searchGroupByGroupID(currentGrID).leaveGroup(id);
+                        int index = indexOfgr(id);
+                        listGrID.remove(index);
+                        lastMesID.remove(index);
+                        broadcast(""+username+" left group",currentGrID);
+                        currentGrID=-1;
+                        break;
+                        
+                        
+                        
+                        
                         
                 }
             }
