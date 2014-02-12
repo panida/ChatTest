@@ -51,4 +51,9 @@ public class ChatMessage implements Serializable {
     int getGroupID() {
         return groupID;
     }
+    
+    @Override
+    public String toString() {
+        return this.getMessage();
+    }
 }

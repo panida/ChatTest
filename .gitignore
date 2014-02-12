@@ -6,8 +6,8 @@ build/classes/*
 #netbeans specific
 core
 nbproject/*
-!nbproject/project.properties
-!nbproject/project.xml
+nbproject/project.properties
+nbproject/project.xml
  
 #java specific
 *.class
