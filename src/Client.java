@@ -186,8 +186,8 @@ public class Client {
     }
     
     // what is it?
-    public void listinGroup(int groupID) {
-        this.sendMessage(new ChatMessage(ChatMessage.LISTGROUP, "", groupID));
+    public void listInGroup() {
+        this.sendMessage(new ChatMessage(ChatMessage.LISTGROUP, "", 0));
     }
     
     public void whoisin(int groupID) {
@@ -319,9 +319,9 @@ public class Client {
         public void run() {
             while (true) {
                 try {
-                    System.out.println("Start Receiving");
+//                    System.out.println("Start Receiving");
                     ChatMessage msg = (ChatMessage) sInput.readObject();
-                    System.out.println(msg);
+//                    System.out.println(msg);
                     
                     // if console mode print the message and add back the prompt
                     if(msg.getType() == ChatMessage.MESSAGE || msg.getType() == ChatMessage.WHOISIN) {
@@ -361,20 +361,40 @@ public class Client {
                         }
                     }
                     */
+                    else if(msg.getType() == ChatMessage.LISTGROUP) {
+                        String str = msg.getMessage();
+                        if(str != "") {
+                            String[] tokens = str.split(";");
+                            for(int i=0 ; i<tokens.length ; i++) {
+                                String[] tok = tokens[i].split(",");
+                                if(tok.length != 2) {
+                                    System.out.println("Fail List Group " + tok.length + "|" + tok);
+                                }
+                                else {
+                                    listGroupID.add(Integer.parseInt(tok[0]));
+                                    listGroupName.add(tok[1]);
+                                    if(cg != null) {
+                                        cg.addGroup(Integer.parseInt(tok[0]), tok[1]);
+                                    }
+                                }
+                            }
+                        }
+                    }
                     else if(msg.getType() == ChatMessage.CREATEGROUP) {
                         if(msg.getGroupID() > 0) {
                             listGroupID.add(msg.getGroupID());
                             listGroupName.add(msg.getMessage());
                             if(cg != null) {
+                                System.out.println("create group " + msg.getGroupID() + " " +  msg.getMessage());
                                 cg.addGroup(msg.getGroupID(), msg.getMessage());
                             }
                         }
                         else {
                             if (cg == null) {
-                                System.out.println("Repeaed Name");      // println in console mode
+                                System.out.println("Repeated Name");      // println in console mode
                                 System.out.print("> ");
                             } else {
-                                cg.showMessageDialog("Repeaed Name");
+                                cg.showMessageDialog("Repeated Name");
                             }
                         }
                     }

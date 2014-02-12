@@ -390,6 +390,8 @@ public class Server {
                                 currentGrID = g.getID();
                                 display("" + username + " just joined group " + g.getName());
                                 broadcast("" + username + " just joined", g.getID());
+                                outMsg = new ChatMessage(ChatMessage.JOINGROUP, g.getName(), g.getID());
+                                writeMsg(outMsg);
                             } else {
                                 display("" + username + " is already in Group " + g.getName());
                                 outMsg = new ChatMessage(ChatMessage.JOINGROUP, "" + username + " is already in Group " + g.getName(), 0);
