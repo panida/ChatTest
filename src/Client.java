@@ -25,7 +25,7 @@ public class Client {
     private Socket socket;
 
     // if I use a GUI or not
-    private ClientGUI cg;
+    private TestGUI cg;
 
     // the server, the port and the username
     private String server, username;
@@ -47,7 +47,7 @@ public class Client {
      * Constructor call when used from a GUI in console mode the ClienGUI
      * parameter is null
      */
-    Client(String server, int port, String username, ClientGUI cg) {
+    Client(String server, int port, String username, TestGUI cg) {
         this.server = server;
         this.port = port;
         this.username = username;
@@ -56,8 +56,9 @@ public class Client {
         
         listGroupID = new ArrayList<>();
         listGroupName = new ArrayList<>();
+        
     }
-
+    
     /**
      * To start the dialog
      */
@@ -97,45 +98,23 @@ public class Client {
         // success we inform the caller that it worked
         return true;
     }
-    
-    private void createGroup(String name) {
-        try {        
-            ChatMessage msg = new ChatMessage(ChatMessage.CREATEGROUP, name, 0);
-            sOutput.writeObject(msg);
-            msg = (ChatMessage) sInput.readObject();
-            if(msg.getGroupID() > 0) {
-                listGroupID.add(msg.getGroupID());
-                listGroupName.add(msg.getMessage());
-            }
-            else System.out.println("Repeaed Name");
-            
-        } catch (IOException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ClassNotFoundException ex) {
-            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        
-    }
 
     /**
      * To send a message to the console or the GUI
      */
-    private void display(String msg) {
+    public void display(String msg) {
         if (cg == null) {
             System.out.println(msg);      // println in console mode
         } else {
             cg.append(msg + "\n");		// append to the ClientGUI JTextArea (or whatever)
         }
     }
-
-    /**
-     * To send a message to the server
-     */
-    void sendMessage(ChatMessage msg) {
-        try {
-            sOutput.writeObject(msg);
-        } catch (IOException e) {
-            display("Exception writing to server: " + e);
+    public void displayPlus(String msg) {
+        if (cg == null) {
+            System.out.println(msg);      // println in console mode
+            System.out.print("> ");
+        } else {
+            cg.append(msg);		// append to the ClientGUI JTextArea (or whatever)
         }
     }
 
@@ -171,6 +150,61 @@ public class Client {
     }
 
     /**
+     * Command (no command "login")
+     */
+    public void logout() {
+        this.sendMessage(new ChatMessage(ChatMessage.LOGOUT, "", 0));
+        this.disconnect();
+    }
+    
+    void sendMessage(ChatMessage msg) {
+        try {
+            sOutput.writeObject(msg);
+        } catch (IOException e) {
+            display("Exception writing to server: " + e);
+        }
+    }
+    
+    public void joinGroup(String groupName) {
+        this.sendMessage(new ChatMessage(ChatMessage.JOINGROUP, groupName, 0));
+    }
+    
+    public void leaveGroup(int groupID) {
+        this.sendMessage(new ChatMessage(ChatMessage.LEAVEGROUP, "", groupID));
+    }
+    
+    public void enterGroup(int groupID) {
+        this.sendMessage(new ChatMessage(ChatMessage.ENTERGROUP, "", groupID));
+    }
+    
+    public void exitGroup(int groupID) {
+        this.sendMessage(new ChatMessage(ChatMessage.EXITGROUP, "", groupID));
+    }
+    
+    // what is it?
+    public void listinGroup(int groupID) {
+        this.sendMessage(new ChatMessage(ChatMessage.LISTGROUP, "", groupID));
+    }
+    
+    public void whoisin(int groupID) {
+        this.sendMessage(new ChatMessage(ChatMessage.WHOISIN, "", groupID));
+    }
+    
+    public void createGroup(String name) {
+        try {        
+            ChatMessage msg = new ChatMessage(ChatMessage.CREATEGROUP, name, 0);
+            sOutput.writeObject(msg);
+        } catch (IOException ex) {
+            Logger.getLogger(Client.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    /**
+     * END Command Section
+     */
+    
+    
+    /**
      * To start the Client in console mode use one of the following command >
      * java Client > java Client username > java Client username portNumber >
      * java Client username portNumber serverAddress at the console prompt If
@@ -183,11 +217,13 @@ public class Client {
      * id used, the GUI is informed of the disconnection
      */
     public static void main(String[] args) {
+        /*
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
                 new TestGUI().setVisible(true);
             }
         });
+        */
         
         // default values
         int portNumber = 1500;
@@ -234,7 +270,7 @@ public class Client {
             System.out.print("Select Group> ");
             String msg = scan.nextLine();
             if (msg.equalsIgnoreCase("LOGOUT")) {
-                client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, "", 0));
+                client.logout();
                 break;
             } 
             else if (msg.equalsIgnoreCase("LISTGROUP")) {
@@ -246,7 +282,7 @@ public class Client {
                     System.out.print("> ");
                     msg = scan.nextLine();
                     if (msg.equalsIgnoreCase("LOGOUT")) {
-                        client.sendMessage(new ChatMessage(ChatMessage.LOGOUT, "", 1));
+                        client.logout();
                         break;
                     }
                     else if (msg.equalsIgnoreCase("WHOISIN")) {
@@ -279,14 +315,64 @@ public class Client {
         public void run() {
             while (true) {
                 try {
+                    System.out.println("Start Receiving");
                     ChatMessage msg = (ChatMessage) sInput.readObject();
+                    System.out.println(msg);
+                    
                     // if console mode print the message and add back the prompt
-                    if (cg == null) {
-                        System.out.println(msg);
-                        System.out.print("> ");
-                    } else {
-                        cg.append(msg.getMessage());
+                    if(msg.getType() == ChatMessage.MESSAGE || msg.getType() == ChatMessage.WHOISIN) {
+                        displayPlus(msg.getMessage());
                     }
+                    else if(msg.getType() == ChatMessage.JOINGROUP) {
+                        if(msg.getGroupID() == 0) {
+                            if (cg == null) {
+                                System.out.println("No Group to join");      // println in console mode
+                                System.out.print("> ");
+                            } else {
+                                cg.showMessageDialog("No Group to join");
+                            }
+                        }
+                    }
+                    /*
+                    else if(msg.getType() == ChatMessage.LEAVEGROUP) {
+                        if(msg.getGroupID() == 0) {
+                            cg.showMessageDialog("No Group to leave");
+                        }
+                    }
+                    else if(msg.getType() == ChatMessage.EXITGROUP) {
+                        if(msg.getGroupID() == 0) {
+                            cg.showMessageDialog("No Group to exit");
+                        }
+                    }
+                    else if(msg.getType() == ChatMessage.ENTERGROUP) {
+                        if(msg.getGroupID() == 0) {
+                            cg.showMessageDialog("No Group to enter");
+                        }
+                    }
+                    */
+                    else if(msg.getType() == ChatMessage.CREATEGROUP) {
+                        if(msg.getGroupID() > 0) {
+                            listGroupID.add(msg.getGroupID());
+                            listGroupName.add(msg.getMessage());
+                        }
+                        else {
+                            if (cg == null) {
+                                System.out.println("Repeaed Name");      // println in console mode
+                                System.out.print("> ");
+                            } else {
+                                cg.showMessageDialog("Repeaed Name");
+                            }
+                        }
+                    }
+                    else {
+                        if (cg == null) {
+                            System.out.println("What the hell this type is!");
+                            System.out.print("> ");
+                        } else {
+                            cg.showMessageDialog("There is something wrong!!!");
+                        }
+                    }
+                    
                 } catch (IOException e) {
                     display("Server has close the connection: " + e);
                     if (cg != null) {
