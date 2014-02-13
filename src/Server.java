@@ -420,20 +420,23 @@ public class Server {
                         }
                         break;
                     case ChatMessage.ENTERGROUP:
-                        tname = cm.getMessage();
-                        g = searchGroupByName(tname);
+//                        tname = cm.getMessage();
+                        int tID = cm.getGroupID();
+                        g = searchGroupByGroupID(tID);
                         if (g != null) {              
-                            display("" + username + " just entered group " + tname + " with ID " + g.getID());
+//                            display("" + username + " just entered group " + tname + " with ID " + g.getID());
+                            display("" + username + " just entered group " + g.getName() + " with ID " + g.getID());
                             currentGrID=g.getID();
                             outMsg = new ChatMessage(ChatMessage.ENTERGROUP,"", g.getID());
                             writeMsg(outMsg);
                             //broadcast("" + username + " just entered group",g.getID());
                         
-                        } else {
-                            display("" + tname + " already exists");
-                            outMsg = new ChatMessage(ChatMessage.ENTERGROUP, "Group " + tname + " does not exist", 0);
-                            writeMsg(outMsg);
-                        }
+                        } 
+//                        else {
+//                            display("" + tname + " does not exists");
+//                            outMsg = new ChatMessage(ChatMessage.ENTERGROUP, "Group " + tname + " does not exist", 0);
+//                            writeMsg(outMsg);
+//                        }
                         break;
                     case ChatMessage.EXITGROUP:
                         currentGrID=-1;

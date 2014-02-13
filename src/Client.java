@@ -344,7 +344,7 @@ public class Client {
                             }
                         }
                     }
-                    /*
+                    
                     else if(msg.getType() == ChatMessage.LEAVEGROUP) {
                         if(msg.getGroupID() == 0) {
                             cg.showMessageDialog("No Group to leave");
@@ -360,7 +360,7 @@ public class Client {
                             cg.showMessageDialog("No Group to enter");
                         }
                     }
-                    */
+                    
                     else if(msg.getType() == ChatMessage.LISTGROUP) {
                         String str = msg.getMessage();
                         if(str != "") {

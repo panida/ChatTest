@@ -438,10 +438,10 @@ public class TestGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         client.createGroup(createGroupField.getText());
         
-        enterGroupButton.setEnabled(false);
-        exitGroupButton.setEnabled(true);
-        leaveGroupButton.setEnabled(true);
-        sendButton.setEnabled(true);
+        enterGroupButton.setEnabled(true);
+        exitGroupButton.setEnabled(false);
+        leaveGroupButton.setEnabled(false);
+        sendButton.setEnabled(false);
     }//GEN-LAST:event_createGroupButtonActionPerformed
 
     private void messageFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageFieldKeyPressed
