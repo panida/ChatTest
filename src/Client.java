@@ -386,7 +386,7 @@ public class Client {
                             listGroupName.add(msg.getMessage());
                             if(cg != null) {
                                 System.out.println("create group " + msg.getGroupID() + " " +  msg.getMessage());
-                                cg.addGroup(msg.getGroupID(), msg.getMessage());
+//                                cg.addGroup(msg.getGroupID(), msg.getMessage());
                             }
                         }
                         else {

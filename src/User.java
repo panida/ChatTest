@@ -21,6 +21,7 @@ public class User {
         username = _name;
         id = _id;
         listGroupID = new ArrayList<>();
+        lastMesID = new ArrayList<>();
     }
 
     public int getID() {
@@ -36,8 +37,8 @@ public class User {
     }
 
     public void addGroup(int groupID) {
-        if (listGroupID.indexOf(Integer.valueOf(groupID)) == -1) {
-            listGroupID.add(Integer.valueOf(groupID));
+        if (listGroupID.indexOf(groupID) == -1) {
+            listGroupID.add(groupID);
         } else {
             System.out.println("This user(" + this.username + ") is already in this group(" + groupID + ")");
         }
