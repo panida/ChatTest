@@ -29,6 +29,8 @@ public class Server {
     private boolean keepGoing;
 
     private ArrayList<Group> listGr;
+    
+    private ArrayList<User> listUser;
 
 
     /*
@@ -49,6 +51,7 @@ public class Server {
         // ArrayList for the Client list
         clientList = new ArrayList<ClientThread>();
         listGr = new ArrayList<Group>();
+        listUser = new ArrayList<User>();
     }
 
     public void start() {
@@ -237,6 +240,17 @@ public class Server {
         }
         return null;
     }
+    
+    private User searchUserbyUsername(String uName){
+        User u;
+        for (int i =0; i < listUser.size(); i++) {
+            u = listUser.get(i);
+            if (u.getName().equalsIgnoreCase(uName)) {
+                return u;
+            }
+        }
+        return null;
+    }
 
     /**
      * To run as a console application just open a console window and: > java
@@ -270,30 +284,23 @@ public class Server {
     /**
      * One instance of this thread will run for each client
      */
-    class ClientThread extends Thread {
-
-        ArrayList<Integer> listGrID;
-        ArrayList<Integer> lastMesID;
-
+    class ClientThread extends Thread {       
         int currentGrID; //if I'm not in any group, currentGrID=-1
 
         // the socket where to listen/talk
         Socket socket;
         ObjectInputStream sInput;
         ObjectOutputStream sOutput;
-        // my unique id (easier for deconnection)
-        int id;
-        // the Username of the Client
-        String username;
-        // the only type of message a will receive
+        
         ChatMessage cm;
         // the date I connect
         String date;
+        
+        User user;
 
         // Constructore
         ClientThread(Socket socket) {
-            // a unique id
-            id = ++uniqueId;
+            
             this.socket = socket;
             this.currentGrID = -1;
             this.listGrID = new ArrayList<>();
@@ -305,7 +312,12 @@ public class Server {
                 sOutput = new ObjectOutputStream(socket.getOutputStream());
                 sInput = new ObjectInputStream(socket.getInputStream());
                 // read the username
-                username = (String) sInput.readObject();
+                String username = (String) sInput.readObject();
+                user = searchUserbyUsername(username);
+                if(user==null){
+                    user = new User(username,++uniqueId);  
+                }
+                   
                 display(username + " just connected.");
             } catch (IOException e) {
                 display("Exception creating new Input/output Streams: " + e);
@@ -442,11 +454,12 @@ public class Server {
                         currentGrID=-1;
                         break;
                     case ChatMessage.LEAVEGROUP:
-                        searchGroupByGroupID(currentGrID).leaveGroup(id);
-                        int index = indexOfgr(id);
-                        listGrID.remove(index);
-                        lastMesID.remove(index);
-                        broadcast(""+username+" left group",currentGrID);
+                        searchGroupByGroupID(currentGrID).leaveGroup(user.getID());
+                        int index = indexOfgr(user.getID());
+//                        listGrID.remove(index);
+//                        .remove(index);
+                        user.leaveGroup(index);
+                        broadcast(""+user.getName()+" left group",currentGrID);
                         
                         currentGrID=-1;
                         break;
@@ -459,7 +472,7 @@ public class Server {
             }
             // remove myself from the arrayList containing the list of the
             // connected Clients
-            remove(id);
+            remove(user.getID());
             close();
         }
 
@@ -500,22 +513,22 @@ public class Server {
                 sOutput.writeObject(msg);
             } // if an error occurs, do not abort just inform the user
             catch (IOException e) {
-                display("Error sending message to " + username);
+                display("Error sending message to " + user.getName());
                 display(e.toString());
             }
             return true;
         }
 
         private int getID() {
-            return id;
+            return user.getID();
         }
 
         private String getUsername() {
-            return username;
+            return user.getName();
         }
 
         private int getLastMessageID(int grID) {
-            return lastMesID.get(indexOfgr(grID));
+            return user.getLastMessageID(grID);
         }
 
         private int getCurrentGroupID() {
@@ -523,20 +536,15 @@ public class Server {
         }
 
         private void setLastMessageID(int grID, int mID) {
-            lastMesID.set(indexOfgr(grID), mID);
+            user.setLastMessageID(grID, mID);
         }
 
         private ArrayList<Integer> getListGroupID() {
-            return listGrID;
+            return user.getListGroupID();
         }
 
         private int indexOfgr(int grID) {
-            for (int i = 0; i < listGrID.size(); i++) {
-                if (listGrID.get(i) == grID) {
-                    return i;
-                }
-            }
-            return -1;
+            return user.indexOfgr(grID);
         }
     }
 }
