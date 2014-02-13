@@ -36,6 +36,23 @@ public class TestGUI extends javax.swing.JFrame {
         messageField.setEnabled(bl);
         createGroupButton.setEnabled(bl);
     }
+    
+    void setObjectIsEnter() {
+        if(isEnter) {
+            enterGroupButton.setEnabled(false);
+            exitGroupButton.setEnabled(true);
+            leaveGroupButton.setEnabled(true);
+            sendButton.setEnabled(true);
+        }
+        else {
+            enterGroupButton.setEnabled(true);
+            exitGroupButton.setEnabled(false);
+            leaveGroupButton.setEnabled(false);
+            sendButton.setEnabled(false);
+        }
+    }
+    
+    
     String testRadio = "testRadio";
     public TestGUI() {
         initComponents();
@@ -361,6 +378,9 @@ public class TestGUI extends javax.swing.JFrame {
             
             listGroupPanel.removeAll();
             listGroup.clear();
+            while(groupRadio.getElements().hasMoreElements()) {
+                groupRadio.remove(groupRadio.getElements().nextElement());
+            }
             
             login = false;
             loginButton.setText("Log In");
@@ -374,24 +394,43 @@ public class TestGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         client.joinGroup(joinGroupField.getText());
         
-        enterGroupButton.setEnabled(false);
-        exitGroupButton.setEnabled(true);
-        leaveGroupButton.setEnabled(true);
-        sendButton.setEnabled(true);
+        isEnter = true;
+        setObjectIsEnter();
     }//GEN-LAST:event_joinGroupButtonActionPerformed
 
     private void leaveGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaveGroupButtonActionPerformed
         // TODO add your handling code here:
-        int groupID = Integer.parseInt(groupRadio.getSelection().getActionCommand());
-        client.leaveGroup(groupID);
+        JRadioButton c = null;
+        for(int i=0 ; i<listGroup.size() ; i++) {
+            if(listGroup.get(i).isSelected()) {
+                c = listGroup.get(i);
+                break;
+            }
+        }
         
-        if(listGroup.size() > 0) listGroup.get(0).setSelected(true);
+        if(c != null) {
+            int groupID = Integer.parseInt(c.getActionCommand());
+            System.out.println("leave group ID: " + groupID + " " + c.getText());
+
+            client.leaveGroup(groupID);
+
+            if(listGroup.size() > 0) listGroup.get(0).setSelected(true);
+
+            isEnter = false;
+            setObjectIsEnter();
+        }
         
-        isEnter = false;
-        enterGroupButton.setEnabled(true);
-        exitGroupButton.setEnabled(false);
-        leaveGroupButton.setEnabled(false);
-        sendButton.setEnabled(false);
+        
+        System.out.println("test1");
+        listGroupPanel.removeAll();
+        listGroup.clear();
+        while(groupRadio.getElements().hasMoreElements()) {
+            groupRadio.remove(groupRadio.getElements().nextElement());
+        }
+        listGroupPanel.revalidate();
+        System.out.println("test2");
+        showMessageDialog("fjdsk");
+//        client.listInGroup();
     }//GEN-LAST:event_leaveGroupButtonActionPerformed
 
     private void enterGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enterGroupButtonActionPerformed
@@ -402,10 +441,7 @@ public class TestGUI extends javax.swing.JFrame {
         
         
         isEnter = true;
-        enterGroupButton.setEnabled(false);
-        exitGroupButton.setEnabled(true);
-        leaveGroupButton.setEnabled(true);
-        sendButton.setEnabled(true);
+        setObjectIsEnter();
     }//GEN-LAST:event_enterGroupButtonActionPerformed
 
     private void exitGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitGroupButtonActionPerformed
@@ -414,10 +450,7 @@ public class TestGUI extends javax.swing.JFrame {
         client.exitGroup(groupID);
         
         isEnter = false;
-        enterGroupButton.setEnabled(true);
-        exitGroupButton.setEnabled(false);
-        leaveGroupButton.setEnabled(false);
-        sendButton.setEnabled(false);
+        setObjectIsEnter();
     }//GEN-LAST:event_exitGroupButtonActionPerformed
 
     private void sendButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_sendButtonActionPerformed
@@ -438,10 +471,6 @@ public class TestGUI extends javax.swing.JFrame {
         // TODO add your handling code here:
         client.createGroup(createGroupField.getText());
         
-        enterGroupButton.setEnabled(false);
-        exitGroupButton.setEnabled(true);
-        leaveGroupButton.setEnabled(true);
-        sendButton.setEnabled(true);
     }//GEN-LAST:event_createGroupButtonActionPerformed
 
     private void messageFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageFieldKeyPressed
@@ -453,6 +482,12 @@ public class TestGUI extends javax.swing.JFrame {
 
     private void LGActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_LGActionPerformed
         // TODO add your handling code here:
+        listGroupPanel.removeAll();
+        listGroup.clear();
+//        System.out.println(groupRadio.getButtonCount());
+        while(groupRadio.getElements().hasMoreElements()) {
+            groupRadio.remove(groupRadio.getElements().nextElement());
+        }
         client.listInGroup();
     }//GEN-LAST:event_LGActionPerformed
 
@@ -472,14 +507,13 @@ public class TestGUI extends javax.swing.JFrame {
     public void addGroup(int groupID, String name) {
         JRadioButton c = new JRadioButton(name);
         c.setActionCommand(String.valueOf(groupID));
-        System.out.println("TEST ADD GROUP " + groupID + " " + name);
+        System.out.println("ADD GROUP ID: " + groupID + ", GROUP NAME: " + name);
         listGroup.add(c);
         groupRadio.add(listGroup.get(listGroup.size()-1));
         listGroupPanel.add(listGroup.get(listGroup.size()-1));
         listGroup.get(listGroup.size()-1).setSelected(true);
         
         listGroupPanel.revalidate();
-        sendButton.setEnabled(true);
     }
     
     void connectionFailed() {

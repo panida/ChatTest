@@ -13,13 +13,15 @@ import java.util.*;
 public class User {
 
     private int id;
-    private String name;
+    private String username;
     private final ArrayList<Integer> listGroupID;
+    private ArrayList<Integer> lastMesID;
 
     public User(String _name, int _id) {
-        name = _name;
+        username = _name;
         id = _id;
         listGroupID = new ArrayList<>();
+        lastMesID = new ArrayList<>();
     }
 
     public int getID() {
@@ -27,7 +29,7 @@ public class User {
     }
 
     public String getName() {
-        return this.name;
+        return this.username;
     }
 
     public ArrayList<Integer> getGroupID() {
@@ -35,19 +37,53 @@ public class User {
     }
 
     public void addGroup(int groupID) {
-        if (listGroupID.indexOf(Integer.valueOf(groupID)) == -1) {
-            listGroupID.add(Integer.valueOf(groupID));
+        if (listGroupID.indexOf(groupID) == -1) {
+            listGroupID.add(groupID);
         } else {
-            System.out.println("This user(" + this.name + ") is already in this group(" + groupID + ")");
+            System.out.println("This user(" + this.username + ") is already in this group(" + groupID + ")");
         }
     }
 
-    public void leaveGroup(int groupID) {
+    public void leaveGroup(int index) {
+        listGroupID.remove(index);
+        lastMesID.remove(index);
+        
+        /*
         if (listGroupID.indexOf(Integer.valueOf(groupID)) != -1) {
             listGroupID.remove(listGroupID.indexOf(Integer.valueOf(groupID)));
         } else {
-            System.out.println("This user(" + this.name + ") is not in this group(" + groupID + ")");
+            System.out.println("This user(" + this.username + ") is not in this group(" + groupID + ")");
         }
+        */
+    }
+
+    public void addMsgID(int msgID) {
+        lastMesID.add(msgID);
+    }
+    
+    
+    
+    
+    
+    public int getLastMessageID(int grID) {
+            return lastMesID.get(indexOfgr(grID));
+        }
+
+    public int indexOfgr(int grID) {
+        for (int i = 0; i < listGroupID.size(); i++) {
+            if (listGroupID.get(i) == grID) {
+                return i;
+            }
+        }
+        return -1;
+    }
+
+    public void setLastMessageID(int grID, int mID) {
+        lastMesID.set(indexOfgr(grID), mID);
+    }
+
+    public ArrayList<Integer> getListGroupID() {
+        return listGroupID;
     }
 
     public static void main(String args[]) {
