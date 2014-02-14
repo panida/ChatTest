@@ -48,7 +48,7 @@ public class Group {
         if (listUserID.indexOf(Integer.valueOf(userID)) != -1) {
             listUserID.remove(listUserID.indexOf(Integer.valueOf(userID)));
         } else {
-            System.out.println("This user is not in this group");
+            System.out.println("This user(" + userID + ") is not in this group " + this.id);
         }
     }
     

@@ -2,6 +2,7 @@
 dist/*
 build/*
 build/classes/*
+!build/classes/Resource
  
 #netbeans specific
 core
