@@ -1,4 +1,5 @@
 
+import java.awt.Component;
 import java.util.ArrayList;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
@@ -39,12 +40,24 @@ public class TestGUI extends javax.swing.JFrame {
     
     void setObjectIsEnter() {
         if(isEnter) {
+            Component[] gc = listGroupPanel.getComponents();
+            for(Component c : gc) {
+                c.setEnabled(false);
+            }
+            listGroupPanel.setEnabled(false);
+            
             enterGroupButton.setEnabled(false);
             exitGroupButton.setEnabled(true);
             leaveGroupButton.setEnabled(true);
             sendButton.setEnabled(true);
         }
         else {
+            Component[] gc = listGroupPanel.getComponents();
+            for(Component c : gc) {
+                c.setEnabled(true);
+            }
+            listGroupPanel.setEnabled(true);
+            
             enterGroupButton.setEnabled(true);
             exitGroupButton.setEnabled(false);
             leaveGroupButton.setEnabled(false);
@@ -69,14 +82,7 @@ public class TestGUI extends javax.swing.JFrame {
         listGroup = new ArrayList<>();
         listGroupPanel.setLayout(new BoxLayout(listGroupPanel, BoxLayout.Y_AXIS));
         
-        // test Radio
-        /*
-        for(int i=0 ; i<10 ; i++) {
-            listGroup.add(new JRadioButton(i+""));
-            groupRadio.add(listGroup.get(listGroup.size()-1));
-            listGroupPanel.add(listGroup.get(listGroup.size()-1));
-        }*/
-        
+        LG.setEnabled(false);
     }
 
     /**
@@ -362,10 +368,8 @@ public class TestGUI extends javax.swing.JFrame {
                 return;
             }
 
-            client.listInGroup();
+            client.listInGroup();           // show group if already is in
             jTextArea1.setText("");
-            // load list group
-            
             
             login = true;
             loginButton.setText("Log Out");
@@ -376,6 +380,7 @@ public class TestGUI extends javax.swing.JFrame {
         else {
             client.logout();
             
+            // clear Radio button
             listGroupPanel.removeAll();
             listGroup.clear();
             while(groupRadio.getElements().hasMoreElements()) {
@@ -400,6 +405,8 @@ public class TestGUI extends javax.swing.JFrame {
 
     private void leaveGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaveGroupButtonActionPerformed
         // TODO add your handling code here:
+        
+        // find which Radio is selected
         JRadioButton c = null;
         for(int i=0 ; i<listGroup.size() ; i++) {
             if(listGroup.get(i).isSelected()) {
@@ -421,27 +428,32 @@ public class TestGUI extends javax.swing.JFrame {
         }
         
         
-        System.out.println("test1");
         listGroupPanel.removeAll();
         listGroup.clear();
         while(groupRadio.getElements().hasMoreElements()) {
             groupRadio.remove(groupRadio.getElements().nextElement());
         }
         listGroupPanel.revalidate();
-        System.out.println("test2");
-        showMessageDialog("fjdsk");
-//        client.listInGroup();
+        client.listInGroup();
     }//GEN-LAST:event_leaveGroupButtonActionPerformed
 
     private void enterGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enterGroupButtonActionPerformed
         // TODO add your handling code here:
-        
-        int groupID = Integer.parseInt(groupRadio.getSelection().getActionCommand());
-        client.enterGroup(groupID);
-        
-        
-        isEnter = true;
-        setObjectIsEnter();
+        JRadioButton r = null;
+        for(JRadioButton rb : listGroup) {
+            if(rb.isSelected()) {
+                r = rb;
+                break;
+            }
+        }
+        if(r != null) {
+            int groupID = Integer.parseInt(groupRadio.getSelection().getActionCommand());
+            client.enterGroup(groupID);
+
+
+            isEnter = true;
+            setObjectIsEnter();
+        }
     }//GEN-LAST:event_enterGroupButtonActionPerformed
 
     private void exitGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_exitGroupButtonActionPerformed

@@ -111,10 +111,10 @@ public class Client {
     }
     public void displayPlus(String msg) {
         if (cg == null) {
-            System.out.println(msg);      // println in console mode
+            System.out.println(msg);
             System.out.print("> ");
         } else {
-            cg.append(msg);		// append to the ClientGUI JTextArea (or whatever)
+            cg.append(msg);
         }
     }
 
@@ -185,7 +185,6 @@ public class Client {
         this.sendMessage(new ChatMessage(ChatMessage.EXITGROUP, "", groupID));
     }
     
-    // what is it?
     public void listInGroup() {
         this.sendMessage(new ChatMessage(ChatMessage.LISTGROUP, "", 0));
     }
@@ -330,10 +329,10 @@ public class Client {
                     else if(msg.getType() == ChatMessage.JOINGROUP) {
                         if(msg.getGroupID() == 0) {
                             if (cg == null) {
-                                System.out.println("No Group to join");      // println in console mode
+                                System.out.println(msg.getMessage());      // println in console mode
                                 System.out.print("> ");
                             } else {
-                                cg.showMessageDialog("No Group to join");
+                                cg.showMessageDialog(msg.getMessage());
                             }
                         }
                         else {
@@ -347,14 +346,15 @@ public class Client {
                     
                     else if(msg.getType() == ChatMessage.LEAVEGROUP) {
                         if(msg.getGroupID() == 0) {
-                            cg.showMessageDialog("No Group to leave");
+                            cg.showMessageDialog(msg.getMessage());
                         }
                     }
+                    /*
                     else if(msg.getType() == ChatMessage.EXITGROUP) {
                         if(msg.getGroupID() == 0) {
                             cg.showMessageDialog("No Group to exit");
                         }
-                    }
+                    }*/
                     else if(msg.getType() == ChatMessage.ENTERGROUP) {
                         if(msg.getGroupID() == 0) {
                             cg.showMessageDialog("No Group to enter");
@@ -363,38 +363,40 @@ public class Client {
                     
                     else if(msg.getType() == ChatMessage.LISTGROUP) {
                         String str = msg.getMessage();
-                        if(str != "") {
+                        if(!str.equalsIgnoreCase("")) {
                             String[] tokens = str.split(";");
-                            for(int i=0 ; i<tokens.length ; i++) {
-                                String[] tok = tokens[i].split(",");
-                                if(tok.length != 2) {
-                                    System.out.println("Fail List Group " + tok.length + "|" + tok);
-                                }
-                                else {
+                            for (String token : tokens) {
+                                String[] tok = token.split(",");
+                                if(tok.length == 2) {
                                     listGroupID.add(Integer.parseInt(tok[0]));
                                     listGroupName.add(tok[1]);
                                     if(cg != null) {
                                         cg.addGroup(Integer.parseInt(tok[0]), tok[1]);
                                     }
                                 }
+                                else {
+                                    System.out.println("Fail List Group " + tok.length + "|" + tok);
+                                }
                             }
                         }
                     }
                     else if(msg.getType() == ChatMessage.CREATEGROUP) {
                         if(msg.getGroupID() > 0) {
-                            listGroupID.add(msg.getGroupID());
-                            listGroupName.add(msg.getMessage());
+//                            listGroupID.add(msg.getGroupID());
+//                            listGroupName.add(msg.getMessage());
                             if(cg != null) {
-                                System.out.println("create group " + msg.getGroupID() + " " +  msg.getMessage());
 //                                cg.addGroup(msg.getGroupID(), msg.getMessage());
+                            }
+                            else {
+                                System.out.println("create group ID:" + msg.getGroupID() + ", groupName: " +  msg.getMessage());
                             }
                         }
                         else {
                             if (cg == null) {
-                                System.out.println("Repeated Name");      // println in console mode
+                                System.out.println(msg.getMessage());      // println in console mode
                                 System.out.print("> ");
                             } else {
-                                cg.showMessageDialog("Repeated Name");
+                                cg.showMessageDialog(msg.getMessage());
                             }
                         }
                     }
