@@ -327,9 +327,9 @@ public class Client {
                         displayPlus(msg.getMessage());
                     }
                     else if(msg.getType() == ChatMessage.JOINGROUP) {
-                        if(msg.getGroupID() == 0) {
+                        if(msg.getGroupID() == 0) { // error
                             if (cg == null) {
-                                System.out.println(msg.getMessage());      // println in console mode
+                                System.out.println(msg.getMessage());
                                 System.out.print("> ");
                             } else {
                                 cg.showMessageDialog(msg.getMessage());
@@ -340,6 +340,7 @@ public class Client {
                             listGroupName.add(msg.getMessage());
                             if(cg != null) {
                                 cg.addGroup(msg.getGroupID(), msg.getMessage());
+                                cg.setIsEnter(true);
                             }
                         }
                     }

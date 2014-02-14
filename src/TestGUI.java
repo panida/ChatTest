@@ -6,6 +6,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JRadioButton;
+import javax.swing.text.DefaultCaret;
 
 /*
  * To change this license header, choose License Headers in Project Properties.
@@ -124,7 +125,7 @@ public class TestGUI extends javax.swing.JFrame {
 
         usernameField.setText("Anonymous");
 
-        loginButton.setIcon(new javax.swing.ImageIcon("C:\\Users\\Sabata\\Documents\\GitHub\\ChatTest\\build\\classes\\Resource\\ON30.png")); // NOI18N
+        loginButton.setIcon(new javax.swing.ImageIcon("C:\\Users\\LotK\\Documents\\GitHub\\ChatTest\\build\\classes\\Resource\\ON30.png")); // NOI18N
         loginButton.setBorder(new javax.swing.border.SoftBevelBorder(javax.swing.border.BevelBorder.RAISED));
         loginButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -313,7 +314,7 @@ public class TestGUI extends javax.swing.JFrame {
                     .addComponent(leaveGroupButton)
                     .addComponent(messageField, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                     .addComponent(sendButton))
-                .addContainerGap(19, Short.MAX_VALUE))
+                .addContainerGap(17, Short.MAX_VALUE))
         );
 
         pack();
@@ -360,6 +361,8 @@ public class TestGUI extends javax.swing.JFrame {
             setObjectEnable(false);
             sendButton.setEnabled(false);
             usernameField.setEnabled(true);
+            
+            jTextArea1.setText("");
         }
         
     }//GEN-LAST:event_loginButtonActionPerformed
@@ -367,10 +370,13 @@ public class TestGUI extends javax.swing.JFrame {
     private void joinGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_joinGroupButtonActionPerformed
         // TODO add your handling code here:
         client.joinGroup(joinGroupField.getText());
+        joinGroupField.setText("");
         
-        isEnter = true;
-        setObjectIsEnter();
-        listGroupPanel.revalidate();
+        //isEnter = true;
+        if(isEnter) {
+            setObjectIsEnter();
+            listGroupPanel.revalidate();
+        }
     }//GEN-LAST:event_joinGroupButtonActionPerformed
 
     private void leaveGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_leaveGroupButtonActionPerformed
@@ -405,6 +411,8 @@ public class TestGUI extends javax.swing.JFrame {
         }
         listGroupPanel.revalidate();
         client.listInGroup();
+        
+        jTextArea1.setText("");
     }//GEN-LAST:event_leaveGroupButtonActionPerformed
 
     private void enterGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_enterGroupButtonActionPerformed
@@ -432,6 +440,8 @@ public class TestGUI extends javax.swing.JFrame {
 
             isEnter = false;
             setObjectIsEnter();
+            
+            jTextArea1.setText("");
         }
     }//GEN-LAST:event_enterGroupButtonActionPerformed
 
@@ -452,7 +462,7 @@ public class TestGUI extends javax.swing.JFrame {
     private void createGroupButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_createGroupButtonActionPerformed
         // TODO add your handling code here:
         client.createGroup(createGroupField.getText());
-        
+        createGroupField.setText("");
     }//GEN-LAST:event_createGroupButtonActionPerformed
 
     private void messageFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_messageFieldKeyPressed
@@ -469,6 +479,9 @@ public class TestGUI extends javax.swing.JFrame {
      */
     public void append(String str) {
         jTextArea1.append(str);
+//        jTextArea1.setCaretPosition(jTextArea1.getDocument().getLength());
+        DefaultCaret caret = (DefaultCaret)jTextArea1.getCaret();
+        caret.setUpdatePolicy(DefaultCaret.ALWAYS_UPDATE);
     }
     
     public void showMessageDialog(String str) {
@@ -485,6 +498,10 @@ public class TestGUI extends javax.swing.JFrame {
         listGroup.get(listGroup.size()-1).setSelected(true);
         
         listGroupPanel.revalidate();
+    }
+    
+    public void setIsEnter(boolean bl) {
+        isEnter = bl;
     }
     
     void connectionFailed() {
