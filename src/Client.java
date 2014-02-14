@@ -25,7 +25,7 @@ public class Client {
     private Socket socket;
 
     // if I use a GUI or not
-    private TestGUI cg;
+    private ClientGUI cg;
 
     // the server, the port and the username
     private String server, username;
@@ -47,7 +47,7 @@ public class Client {
      * Constructor call when used from a GUI in console mode the ClienGUI
      * parameter is null
      */
-    Client(String server, int port, String username, TestGUI cg) {
+    Client(String server, int port, String username, ClientGUI cg) {
         this.server = server;
         this.port = port;
         this.username = username;
@@ -86,8 +86,8 @@ public class Client {
 
         // creates the Thread to listen from the server 
         new ListenFromServer().start();
-		// Send our username to the server this is the only message that we
-        // will send as a String. All other messages will be ChatMessage objects
+        
+        // username is String
         try {
             sOutput.writeObject(username);
         } catch (IOException eIO) {
@@ -144,7 +144,7 @@ public class Client {
 
         // inform the GUI
         if (cg != null) {
-            cg.connectionFailed();
+            
         }
 
     }
@@ -220,10 +220,12 @@ public class Client {
      * id used, the GUI is informed of the disconnection
      */
     public static void main(String[] args) {
+        // Not finish
+        
         /*
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                new TestGUI().setVisible(true);
+                ClientGUItGUI().setVisible(true);
             }
         });
         */
@@ -233,7 +235,6 @@ public class Client {
         String serverAddress = "localhost";
         String userName = "Anonymous";
 
-		// depending of the number of arguments provided we fall through
         // name, port, address
         switch (args.length) {
             // > javac Client username portNumber serverAddr
@@ -318,9 +319,7 @@ public class Client {
         public void run() {
             while (true) {
                 try {
-//                    System.out.println("Start Receiving");
                     ChatMessage msg = (ChatMessage) sInput.readObject();
-//                    System.out.println(msg);
                     
                     // if console mode print the message and add back the prompt
                     if(msg.getType() == ChatMessage.MESSAGE || msg.getType() == ChatMessage.WHOISIN) {
@@ -403,7 +402,7 @@ public class Client {
                     }
                     else {
                         if (cg == null) {
-                            System.out.println("What the hell this type is!");
+                            System.out.println("There is something wrong!!!");
                             System.out.print("> ");
                         } else {
                             cg.showMessageDialog("There is something wrong!!!");
@@ -413,7 +412,7 @@ public class Client {
                 } catch (IOException e) {
                     display("Server has close the connection: " + e);
                     if (cg != null) {
-                        cg.connectionFailed();
+                        
                     }
                     break;
                 } // can't happen with a String object but need the catch anyhow

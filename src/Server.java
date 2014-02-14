@@ -19,8 +19,6 @@ public class Server {
     private static int uniqueGrId;
     // an ArrayList to keep the list of the Client
     private ArrayList<ClientThread> clientList;
-    // if I am in a GUI
-    private ServerGUI servGUI;
     // to display time
     private SimpleDateFormat sdf;
     // the port number to listen for connection
@@ -38,16 +36,10 @@ public class Server {
      *  in console
      */
     public Server(int port) {
-        this(port, null);
-    }
-
-    public Server(int port, ServerGUI servGUI) {
-        // GUI or not
-        this.servGUI = servGUI;
-        // the port
         this.port = port;
         // to display hh:mm:ss
         sdf = new SimpleDateFormat("HH:mm:ss");
+        
         // ArrayList for the Client list
         clientList = new ArrayList<ClientThread>();
         listGr = new ArrayList<Group>();
@@ -117,11 +109,7 @@ public class Server {
 
     private void display(String msg) {
         String time = sdf.format(new Date()) + " " + msg;
-        if (servGUI == null) {
-            System.out.println(time);
-        } else {
-            servGUI.appendEvent(time + "\n");
-        }
+        System.out.println(time);
     }
 
     /**
@@ -132,12 +120,10 @@ public class Server {
         String time = sdf.format(new Date());
         String messageLf = time + " " + message + "\n";
         ChatMessage chatMsgLf;
+        
         // display message on console or GUI
-        if (servGUI == null) {
-            System.out.print(messageLf);
-        } else {
-            //servGUI.appendRoom(messageLf, grID);     // append in the room window
-        }
+        System.out.print(messageLf);
+        
         chatMsgLf = new ChatMessage(ChatMessage.MESSAGE, messageLf, grID);
         // we loop in reverse order in case we would have to remove a Client
         // because it has disconnected        
@@ -176,7 +162,7 @@ public class Server {
                     display("Disconnected Client " + ct.getUsername() + " removed from list.");
                 }
             }
-
+            ct.setLastMessageID(g.getID(), g.getCurrentMessageID());
         }
 
     }
@@ -201,11 +187,6 @@ public class Server {
         }
     }
 
-    /**
-     * @author LotK
-     * @param id
-     * @return
-     */
     private ClientThread searchUserByUserID(int id) {
         for (ClientThread cl : clientList) {
             if (cl.getID() == id) {
@@ -213,20 +194,6 @@ public class Server {
                 return cl;
             }
         }
-        /*
-         int left = 0, right = clientList.size() - 1;
-         while (left <= right) {
-         int mid = (left + right) / 2;
-         if (clientList.get(mid).getID() == id) {
-         System.out.println("Found user: " + clientList.get(mid).getUsername());
-         return clientList.get(mid);
-         }
-         if (clientList.get(mid).getID() < id) {
-         left = mid + 1;
-         } else {
-         right = mid - 1;
-         }
-         }*/
         System.out.println("Not found user with id " + id);
         return null;
     }
@@ -238,20 +205,6 @@ public class Server {
                 return g;
             }
         }
-        /*
-         int left = 0, right = listGr.size() - 1;
-         while (left <= right) {
-         int mid = (left + right) / 2;
-         if (listGr.get(mid).getID() == id) {
-         return listGr.get(mid);
-         }
-         else if (listGr.get(mid).getID() < id) {
-         left = mid +1;
-         } else {
-         right = mid - 1;
-         }
-         }
-         */
         System.out.println("Not found Group with id " + id);
         return null;
     }
