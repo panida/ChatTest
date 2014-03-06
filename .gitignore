@@ -1,15 +1,11 @@
 #ant specific
 dist/*
 build/*
-build/classes/*
 !build/classes/Resource
  
 #netbeans specific
 core
 nbproject/*
-nbproject/project.properties
-nbproject/project.xml
-nbproject/private/*
  
 #java specific
 *.class
